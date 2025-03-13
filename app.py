@@ -26,6 +26,3 @@ def join_lobby_option():
 @app.route('/start_game', methods=['POST'])
 def start_game():
     return render_template('game.html')
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)

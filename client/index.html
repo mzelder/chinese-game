@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
-    <title>Chinese game</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1>Ludo Game</h1>
+<form action="/create_lobby" method="post">
+    <button type="submit">Create Lobby</button>
+</form>
+<br>
+<form action="/join_lobby_option" method="post">
+    <button type="submit">Join Lobby</button>
+</form>
+
+{% endblock %}

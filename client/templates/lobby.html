@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Hosting Lobby</h2>
+
+<br>
+
+<p>Waiting for players..</p>
+
+<br>
+
+<button class="button" onclick="idGeneration()">Get ID!</button>
+
+<br>
+
+<div id="uniqueId"> </div>
+
+<br>
+
+<form action="/game">
+    <button class="button" type="submit">Start a game!</button>
+</form>
+
+{% endblock %}

@@ -5,7 +5,6 @@ app = Flask(__name__,
             template_folder=os.path.join(os.getcwd(), '../client/templates'),
             static_folder=os.path.join(os.getcwd(), '../client/static'))
 
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -17,7 +16,6 @@ def create_lobby():
 @app.route("/join_lobby", methods=['POST'])
 def join_lobby():
     return render_template("join_lobby.html")
-
 
 
 @app.route('/game')

@@ -1,0 +1,130 @@
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Stick", sans-serif;
+
+}
+
+html, body {
+    font-family: "Stick", sans-serif;
+    text-align: center;
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .background--custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    overflow: hidden;
+}
+
+canvas#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    transform: rotate(-4deg) scale(2) translateY(0%);
+    --gradient-color-1: #6C8FC8; 
+    --gradient-color-2: #E1D16F; 
+    --gradient-color-3: #F4A2A2;  
+    --gradient-color-4: #72B88A;
+    --gradient-speed: 0.000016;
+  }
+
+h1 {
+    font-size: 18vw;
+    color: #d32f2f;
+    max-width: 90%;
+}
+
+h2 {
+    font-size: 10vw;
+    color: #d32f2f;
+    max-width: 60%;
+}
+
+.stick-regular {
+    font-family: "Stick", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+}
+  
+.button {
+    font-family: "Stick", sans-serif;
+    background-color: #ff6600;
+    color: white;
+    font-size: 24px;
+    padding: 15px 30px;
+    border: #F7C631;
+    border-radius: 35px;
+    cursor: pointer;
+    transition: transform 0.6s ease;
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+    background-color: #e20000;
+    transform: scale(1.1);
+}
+
+.nav-buttons {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+.nav-buttons button {
+    font-family: "Stick", sans-serif;
+    font-size: 30px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    color: #ffffff;
+    transition: transform 0.6s ease;
+    padding: 1.5vh;
+}
+
+.nav-buttons button:hover{
+    background-color:#e20000;
+    transform: scale(1.1);
+}
+
+footer {
+    width: 100vw;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #333333;
+    color: white;
+    position: absolute;
+    bottom: 0;
+}
+
+
+

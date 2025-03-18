@@ -1,27 +1,21 @@
 from flask import Flask, jsonify, render_template, request
 import os
 
-app = Flask(__name__, template_folder=os.path.join(os.getcwd(), '../client'))
-
+app = Flask(__name__,
+            template_folder=os.path.join(os.getcwd(), '../client/templates'),
+            static_folder=os.path.join(os.getcwd(), '../client/static'))
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-@app.route('/create_lobby', methods=['POST'])
+@app.route("/create_lobby", methods=['POST'])
 def create_lobby():
-    return render_template('lobby.html')
+    return render_template("lobby.html")
 
-
-@app.route('/join_lobby', methods=['POST'])
+@app.route("/join_lobby", methods=['POST'])
 def join_lobby():
-    return render_template('lobby.html')
-
-
-@app.route('/join_lobby_option', methods=['POST'])
-def join_lobby_option():
-    return render_template('join_lobby.html')
+    return render_template("join_lobby.html")
 
 
 @app.route('/game')
@@ -35,7 +29,6 @@ def get_data():
         "user_id": 1
     }
     return jsonify(test_data)
-
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='script/script.js') }}"></script>
+    
+    <title>Ludo Game</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stick&display=swap" rel="stylesheet">
+
+   
+</head>
+
+<body>
+
+<div class="background--custom">
+<canvas id="canvas"></canvas>
+</div>
+
+{% block body %}{% endblock %}
+
+<div class="nav-buttons">
+    <button class="nav-button left" onclick="window.history.back()">&#8592;</button>
+    <button class="nav-button right" onclick="window.history.forward()">&#8594;</button>
+</div>
+
+<footer>
+    <p>&copy; 2025 Ludo by OBNteam</p>
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Hosting Lobby</h2>
+
+<br>
+
+<p>Waiting for players..</p>
+
+<br>
+
+<button class="button">Get ID!</button>
+
+<br>
+
+<div id="uniqueId"> </div>
+
+<form action="/game">
+    <button class="button" type="submit">Start a game!</button>
+</form>
+
+{% endblock %}

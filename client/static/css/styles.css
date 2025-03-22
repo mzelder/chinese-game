@@ -37,13 +37,13 @@ canvas#canvas {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    transform: rotate(-4deg) scale(2) translateY(0%);
+    transform: rotate(-4deg)0%;
     --gradient-color-1: #6C8FC8; 
     --gradient-color-2: #E1D16F; 
     --gradient-color-3: #F4A2A2;  
     --gradient-color-4: #72B88A;
     --gradient-speed: 0.000016;
-  }
+}
 
 h1 {
     font-size: 18vw;
@@ -78,14 +78,12 @@ input[type="text"], input[type="password"] {
     border: #F7C631;
     border-radius: 35px;
     cursor: pointer;
-    transition: transform 0.6s ease;
+    transition: opacity 0.6s ease, transform 0.6s ease;
     box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .button:hover {
-    background-color: #e20000;
-    transform: scale(1.1);
-}
+    background-color: #e20000;}
 
 .nav-buttons {
     position: fixed;
@@ -107,14 +105,11 @@ input[type="text"], input[type="password"] {
     border-radius: 25px;
     cursor: pointer;
     color: #ffffff;
-    transition: transform 0.6s ease;
     padding: 1.5vh;
 }
 
 .nav-buttons button:hover{
-    background-color:#e20000;
-    transform: scale(1.1);
-}
+    background-color:#e20000;}
 
 footer {
     width: 100vw;
@@ -126,5 +121,32 @@ footer {
     bottom: 0;
 }
 
+@keyframes wiggling {
+    0% { transform: translateX(0px)}
 
+    25% {transform: translateX(10px);}
 
+    50% { transform: translateX(0px)}
+
+    75% {transform: translateX(-10px);}
+
+    100% { transform: translateX(0px) }
+}
+
+.wiggling:hover{
+    animation: wiggling 0.5s ease-in-out infinite;
+}
+
+.shadowIn {
+    opacity: 0.1;
+    transition: opacity 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+
+.shadowIn:hover {
+    opacity: 1;
+    box-shadow: 0 0 30px 15px rgba(0, 0, 0, 0)
+}
+
+canvas {
+    border: 2px solid black;
+}

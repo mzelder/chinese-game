@@ -12,7 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Stick&display=swap" rel="stylesheet">
-
    
 </head>
 
@@ -22,14 +21,14 @@
 <canvas id="canvas"></canvas>
 </div>
 
-{% block body %}{% endblock %}
+    {% block body %}{% endblock %}
 
-<div class="nav-buttons">
-    <button class="nav-button left" onclick="window.history.back()">&#8592;</button>
-    <button class="nav-button right" onclick="window.history.forward()">&#8594;</button>
-</div>
+    <div class="nav-buttons">
+        <button class="shadowIn nav-button" onclick="window.history.back()">&#8592;</button>
+        <button class="shadowIn nav-button" onclick="window.history.forward()">&#8594;</button>
+    </div>
 
-<footer>
+<footer class="shadowIn">
     <p>&copy; 2025 Ludo by OBNteam</p>
 </footer>
 

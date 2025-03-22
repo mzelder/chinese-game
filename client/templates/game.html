@@ -1,5 +1,108 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<h2>Game Implementation</h2>
+<canvas id="myCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 2048;
+        canvas.height = 2048;
+
+        //ctx.fillStyle = "white";
+        //ctx.fillRect(0, 0, 2048, 2048);
+        
+        //ctx.fillStyle = "red";
+        //ctx.fillRect(0, 1023, 2048, 2);
+        //ctx.fillRect(1023, 0, 2, 2048);
+
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(1009, 1009, 30, 30);
+
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 6;
+        ctx.strokeRect(869, 869, 310, 310);
+
+        function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(midX, midY);
+            ctx.lineTo(endX, endY);
+            ctx.closePath();
+            ctx.fillStyle=color;
+            ctx.fill();
+
+        }
+
+        metaQuarter(871, 871, 1024, 1024, 1177, 871, "#3A6FC0");
+        metaQuarter(871, 1177, 1024, 1024, 871, 871, "#E85B5B");
+        metaQuarter(1177, 871, 1024, 1024, 1177, 1177, "#D4AF37");
+        metaQuarter(871, 1177, 1024, 1024, 1177, 1177, "#46A463");
+
+        ctx.beginPath();
+        ctx.moveTo(869, 869);
+        ctx.lineTo(1179, 1179);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(1179, 869);
+        ctx.lineTo(869, 1179);
+        ctx.stroke();
+
+        function buildPart(rows, cols, size, gap, startX, startY) {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    let x = startX + col * (size + gap);
+                    let y = startY + row * (size + gap);
+                    
+                    ctx.strokeStyle = "black"
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(x, y, size, size)
+                }
+            }
+        }
+
+        function paintPart(rows, cols, size, gap, startX, startY, color) {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    let x = startX + col * (size + gap);
+                    let y = startY + row * (size + gap);
+
+                ctx.fillStyle = color;
+                ctx.fillRect(x+7, y+7, size-4, size-4);
+        }
+    }
+}
+        
+        buildPart(6, 3, 100, 5, 869, 238);      //top       
+        buildPart(3, 6, 100, 5, 238, 869);      //left
+        buildPart(3, 6, 100, 5, 1185, 869);     //right
+        buildPart(6, 3, 100, 5, 869, 1185);     //bottom
+        
+
+        paintPart(5, 1, 100, 5, 969, 338, "#3A6FC0");   //blue top 
+        paintPart(1, 5, 100, 5, 338, 969, "#E85B5B");   //red left
+        paintPart(1, 5, 100, 5, 1180, 969, "#D4AF37");  //yellow right
+        paintPart(5, 1, 100, 5, 969, 1180, "#46A463");  //green bottom
+        
+        paintPart(1, 1, 100, 5, 1074, 338, "#3A6FC0");  //blue start
+        paintPart(1, 1, 100, 5, 338, 864, "#E85B5B");   //red start   
+        paintPart(1, 1, 100, 5, 1600, 1074, "#D4AF37"); //yellow start
+        paintPart(1, 1, 100, 5, 864, 1600, "#46A463");  //green start
+
+        buildPart(2, 2, 150, 100, 338, 1300);           //blue lobby 
+        buildPart(2, 2, 150, 100, 338, 338);            //red lobby
+        buildPart(2, 2, 150, 100, 1300, 1300);          //yellow lobby
+        buildPart(2, 2, 150, 100, 1300, 338);           //green lobby
+
+        paintPart(2, 2, 150, 100, 1295, 333, "#3A6FC0");    //blue
+        paintPart(2, 2, 150, 100, 333, 333, "#E85B5B");     //red
+        paintPart(2, 2, 150, 100, 1295, 1295, "#D4AF37");   //yellow
+        paintPart(2, 2, 150, 100, 333, 1295, "#46A463");    //green
+        
+</script>
+
+
+
 {% endblock %}

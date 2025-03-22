@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template, request
+import lobby_handler
 import os
 
 app = Flask(__name__,
@@ -28,10 +29,9 @@ def game():
 
 @app.route("/data")
 def get_data():
-    test_data = {
-        "user_id": 1
-    }
-    return jsonify(test_data)
+    id = lobby_handler.create_lobby()
+    ret = lobby_handler.get_lobby_status(id)
+    return ret
 
 
 @app.errorhandler(404)

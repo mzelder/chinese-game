@@ -14,7 +14,9 @@ def home():
 
 @app.route("/create_lobby", methods=['POST'])
 def create_lobby():
-    return render_template("lobby.html")
+    lobby_id = lobby_handler.create_lobby()
+    return render_template('lobby.html', lobby_id=lobby_id)
+    
 
 
 @app.route("/join_lobby", methods=['POST'])

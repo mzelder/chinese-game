@@ -19,22 +19,15 @@ class Lobby():
            func(self, *args, **kwargs)
         return wrapper
     
-
-    
-
-
 games = {}
-
 
 def get_empty_board():
     return "000"
-
 
 def generate_lobby_id():
     pool = string.ascii_lowercase + string.ascii_uppercase + "0123456789"
     id = "#" + "".join(r.sample(pool, 7))
     return id
-
 
 def create_lobby():
     id = generate_lobby_id()
@@ -47,7 +40,6 @@ def get_lobby_status(lobby_id):
     lobby = games[lobby_id]
     lobby_dump = json.dumps(lobby, default=lambda x: x.__dict__)
     return json.loads(lobby_dump)
-
 
 if __name__ == '__main__':
     created = create_lobby()

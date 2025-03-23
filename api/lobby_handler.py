@@ -3,6 +3,8 @@ import string
 import time as t
 import json
 
+games = {} # custom data structure TBD
+
 class Lobby():
     def __init__(self):
         self.number_of_players_connected = 0
@@ -20,14 +22,8 @@ class Lobby():
         return wrapper
     
 
-    
-
-
-games = {}
-
-
 def get_empty_board():
-    return "000"
+    return "000" # Board not implemented yet
 
 
 def generate_lobby_id():
@@ -38,19 +34,13 @@ def generate_lobby_id():
 
 def create_lobby():
     id = generate_lobby_id()
-    while id in games: # reroll the id if a game with that id already exists
+    while id in games: # reroll the id if a game with that id already exists (highly unlikely)
         id = generate_lobby_id()
     games[id] = Lobby()
     return id
+
 
 def get_lobby_status(lobby_id):
     lobby = games[lobby_id]
     lobby_dump = json.dumps(lobby, default=lambda x: x.__dict__)
     return json.loads(lobby_dump)
-
-
-if __name__ == '__main__':
-    created = create_lobby()
-    print(games)
-    print(get_lobby_status(created))
-

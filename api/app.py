@@ -31,9 +31,9 @@ def game():
 
 @app.route("/data")
 def get_data():
+    # dummy code to simulate lobby creation
     id = lobby_handler.create_lobby()
-    ret = lobby_handler.get_lobby_status(id)
-    return ret
+    return lobby_handler.get_lobby_status(id)
 
 
 @app.errorhandler(404)

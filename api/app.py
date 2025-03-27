@@ -16,7 +16,12 @@ def home():
 def create_lobby():
     lobby_id = lobby_handler.create_lobby()
     return render_template('lobby.html', lobby_id=lobby_id)
-    
+
+
+@app.route("/generate_new_id", methods=["GET"])
+def generate_new_id():
+    lobby_id = lobby_handler.create_lobby()
+    return jsonify({"lobby_id": f"#{lobby_id}"})
 
 
 @app.route("/join_lobby", methods=['POST'])

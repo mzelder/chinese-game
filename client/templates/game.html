@@ -1,5 +1,36 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<h2>Game Implementation</h2>
+<h2>Ludo Game</h2>
+
+<div id="game-container">
+    <div id="game-status">
+        <p>Room ID: <span id="room-id">{{ room_id }}</span></p>
+        <p>Your Player ID: <span id="player-id">{{ player_id }}</span></p>
+        <p>Players Connected: <span id="players-connected">0</span></p>
+        <p>Current Player: <span id="current-player">Waiting...</span></p>
+        <p>Last Roll: <span id="last-roll">None</span></p>
+    </div>
+    
+    <div id="dice-container">
+        <button id="roll-dice-btn" class="button" disabled>Roll Dice</button>
+        <div id="dice-result"></div>
+    </div>
+    
+    <div id="turn-status">
+        <p id="turn-message">Waiting for players...</p>
+    </div>
+    
+    <div id="board-container">
+        <p>Game board will be displayed here</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const gameScript = document.createElement('script');
+        gameScript.src = "{{ url_for('static', filename='script/game.js') }}";
+        document.head.appendChild(gameScript);
+    });
+</script>
 {% endblock %}

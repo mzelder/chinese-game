@@ -1,12 +1,13 @@
 * {
-    margin:0;
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Stick", sans-serif;
 
 }
 
-html, body {
+html,
+body {
     font-family: "Stick", sans-serif;
     text-align: center;
     background: transparent !important;
@@ -18,9 +19,9 @@ html, body {
     justify-content: center;
     align-items: center;
     position: relative;
-  }
+}
 
-  .background--custom {
+.background--custom {
     position: fixed;
     top: 0;
     left: 0;
@@ -38,12 +39,12 @@ canvas#canvas {
     height: 100vh;
     z-index: -1;
     transform: rotate(-4deg) scale(2) translateY(0%);
-    --gradient-color-1: #6C8FC8; 
-    --gradient-color-2: #E1D16F; 
-    --gradient-color-3: #F4A2A2;  
+    --gradient-color-1: #6C8FC8;
+    --gradient-color-2: #E1D16F;
+    --gradient-color-3: #F4A2A2;
     --gradient-color-4: #72B88A;
     --gradient-speed: 0.000016;
-  }
+}
 
 h1 {
     font-size: 18vw;
@@ -63,12 +64,13 @@ h2 {
     font-style: normal;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"],
+input[type="password"] {
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 15px;
 }
-  
+
 .button {
     font-family: "Stick", sans-serif;
     background-color: #ff6600;
@@ -111,20 +113,62 @@ input[type="text"], input[type="password"] {
     padding: 1.5vh;
 }
 
-.nav-buttons button:hover{
-    background-color:#e20000;
+.nav-buttons button:hover {
+    background-color: #e20000;
     transform: scale(1.1);
 }
 
 footer {
-    width: 100vw;
-    text-align: center;
-    padding: 10px 0;
-    background-color: #333333;
-    color: white;
-    position: absolute;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 10px 0;
+    text-align: center;
 }
 
+#game-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
 
+#game-status {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+}
 
+#dice-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#dice-result {
+    font-size: 48px;
+    margin: 20px 0;
+    height: 60px;
+}
+
+#turn-status {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: rgba(255, 102, 0, 0.2);
+    border-radius: 10px;
+    text-align: center;
+}
+
+#board-container {
+    margin-top: 30px;
+    min-height: 300px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

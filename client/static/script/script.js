@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function(){
     const button = document.getElementById("ID_generator");
     if (button) {
         //console.log("Button found!");
-        button.addEventListener("click", async function () {
+        button.onclick = async function () {
             //console.log("Button clicked!");
             try {
                 let response = await fetch("/generate_new_id");
@@ -39,8 +39,6 @@ document.addEventListener("DOMContentLoaded", function(){
             } catch (error) {
                 console.error("Error:", error);
             }
-        });
-    } else {
-        //console.error("No button found.");
+        };
     }
 });

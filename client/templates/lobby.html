@@ -10,14 +10,13 @@
 
 <br>
 
-<button class="button">Get ID!</button>
+<button id="ID_generator" class="wiggling button">Get ID!</button>
+<br>
+<p>Lobby ID: <span id="ID_value">{{ lobby_id }}</span></p> 
 
 <br>
-
-<div id="uniqueId"> </div>
-
 <form action="/game">
-    <button class="button" type="submit">Start a game!</button>
+    <button class="wiggling button" type="submit">Start a game!</button>
 </form>
 
 {% endblock %}

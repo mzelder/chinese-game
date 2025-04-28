@@ -1,19 +1,19 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
-<h1>Ludo!</h1>
-
+    <h1>Ludo!</h1>
 <br><br>
 
-<form action="/create_lobby" method="post">
-    <button class="button" type="submit">Create Lobby</button>
-</form>
+    <form action="/create_lobby" method="post">
+        <button class="button wiggling" type="submit">Create Lobby</button>
+    </form>
 
-<br>
+    <br>
 
-<form action="/join_lobby" method="post">
-    <button class="button" type="submit">Join Lobby</button>
-</form>
+    <form action="/join_lobby" method="post">
+        <button class="button wiggling" type="submit">Join Lobby</button>
+    </form>
+
+ 
 
 {% endblock %}

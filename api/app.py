@@ -41,9 +41,9 @@ def get_data():
     return lobby_handler.get_lobby_status(id)
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return "404 - Page not found", 404
+@app.route("/joining_code_error")
+def jError():
+    return render_template("joining_code_Error.html")
 
 
 if __name__ == "__main__":

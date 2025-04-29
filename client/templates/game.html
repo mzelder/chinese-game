@@ -7,7 +7,28 @@
 <button id="diceRollButton" class="button">Roll Dice</button>
 
 <script>
-    let boardIndexes = {};
+    boardIndexes = {};
+    let pawns = [
+        {id: 'blue1', x: 1370, y: 400, color: '#3A6FC0'},
+        {id: 'blue2', x: 1630, y: 400, color: '#3A6FC0'},
+        {id: 'blue3', x: 1370, y: 650, color: '#3A6FC0'},
+        {id: 'blue4', x: 1630, y: 650, color: '#3A6FC0'},
+
+        {id: 'red1', x: 400, y: 400, color: '#E85B5B'},
+        {id: 'red2', x: 650, y: 400, color: '#E85B5B'},
+        {id: 'red3', x: 400, y: 650, color: '#E85B5B'},
+        {id: 'red4', x: 650, y: 650, color: '#E85B5B'},
+
+        {id: 'green1', x: 400, y: 1370, color: '#46A463'},
+        {id: 'green2', x: 650, y: 1370, color: '#46A463'},
+        {id: 'green3', x: 400, y: 1630, color: '#46A463'},
+        {id: 'green4', x: 650, y: 1630, color: '#46A463'},
+
+        {id: 'yellow1', x: 1370, y: 1370, color: '#D4AF37'},
+        {id: 'yellow2', x: 1630, y: 1370, color: '#D4AF37'},
+        {id: 'yellow3', x: 1370, y: 1630, color: '#D4AF37'},
+        {id: 'yellow4', x: 1630, y: 1630, color: '#D4AF37'},
+    ];
     
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
@@ -107,6 +128,7 @@
         paintPart(2, 2, 150, 100, 333, 1295, "#46A463");    // green
 
         drawNumbersOnPathSquares();
+        drawAllPawns();
     }
 
     // Draw once initially
@@ -136,6 +158,7 @@
     diceRollButton.addEventListener('click', function() {
         const diceValue = Math.floor(Math.random() * 6) + 1; // Random 1-6
         displayDiceRoll(diceValue);
+        choosePawn(diceValue);
     });
 
     function displayDiceRoll(value) {
@@ -218,6 +241,104 @@
         }
     }
 }
+
+function drawAllPawns() {
+    for (let pawn of pawns) {
+        drawPawn(pawn.x, pawn.y, pawn.color);
+    }
+}
+
+function choosePawn(diceValue) {
+    canvas.addEventListener("click", function onClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        for (let pawn of pawns) {
+            const distance = Math.hypot(clickX - pawn.x, clickY - pawn.y);
+            if (distance < 30) { // Inside the pawn
+                console.log('You clicked pawn:', pawn.id);
+
+                // Find current pawn position (index)
+                let currentIndex = Object.keys(boardIndexes).find(key => {
+                    let pos = boardIndexes[key];
+                    return Math.abs(pos.x - pawn.x) < 5 && Math.abs(pos.y - pawn.y) < 5;
+                });
+
+                console.log('Current index:', currentIndex);
+
+                if (!currentIndex || isNaN(currentIndex)) {
+                    // Pawn is at home (base), can only move if dice is 6
+                    if (diceValue === 6) {
+                        let startSquare;
+                        if (pawn.color === "#3A6FC0") {          // Blue
+                            startSquare = 4;
+                        } else if (pawn.color === "#E85B5B") {   // Red
+                            startSquare = 43;
+                        } else if (pawn.color === "#46A463") {   // Green
+                            startSquare = 30;
+                        } else if (pawn.color === "#D4AF37") {   // Yellow
+                            startSquare = 17;
+                        }
+                        pawn.x = boardIndexes[startSquare].x;
+                        pawn.y = boardIndexes[startSquare].y;
+                        drawBoard();
+                    } else {
+                        alert("You need to roll a 6 to move a pawn out of the base!");
+                    }
+                } else {
+                    // Pawn is already on the board, can move normally
+                    let newIndex = parseInt(currentIndex) + diceValue;
+                    if (newIndex > 52) newIndex = newIndex - 52; // Wrap around if necessary
+                    if (boardIndexes[newIndex]) {
+                        pawn.x = boardIndexes[newIndex].x;
+                        pawn.y = boardIndexes[newIndex].y;
+                        drawBoard();
+                    }
+                }
+
+                canvas.removeEventListener('click', onClick);
+                break;
+            }
+        }
+    });
+}
+
+
+function onPawnClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+
+    for (let pawn of pawns) {
+        const distance = Math.hypot(clickX - pawn.x, clickY - pawn.y);
+        if (distance < 30) { // Inside the pawn
+            console.log('You clicked pawn:', pawn.id);
+
+            let startSquare;
+            if (pawn.color === "#3A6FC0") {          // Blue
+                startSquare = 4;
+            } else if (pawn.color === "#E85B5B") {   // Red
+                startSquare = 43;
+            } else if (pawn.color === "#46A463") {   // Green
+                startSquare = 30;
+            } else if (pawn.color === "#D4AF37") {   // Yellow
+                startSquare = 17;
+            }
+
+            // Move the pawn to the starting square
+            pawn.x = boardIndexes[startSquare].x;
+            pawn.y = boardIndexes[startSquare].y;
+            drawBoard();
+
+            // 🛑 Stop listening after move
+            canvas.removeEventListener('click', onPawnClick);
+            break;
+        }
+    }
+}
+
+
 
 function hello() {
     Object.values(boardIndexes).forEach(element => {

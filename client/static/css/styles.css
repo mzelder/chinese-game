@@ -164,10 +164,34 @@ canvas {
     stroke-width: 5px;
 }
 
-#pawn_blue {
+#pawn_blue1 {
     position: absolute;
     top: 480px;
-    right: 373px;
+    right: 370px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue2 {
+    position: absolute;
+    top: 480px;
+    right: 630px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue3 {
+    position: absolute;
+    top: 480px;
+    right: 630px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue4 {
+    position: absolute;
+    top: 700px;
+    right: 630px;
     width: 100px;
     height: auto;
 }

@@ -69,7 +69,23 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
             playersCount.textContent = data.players_connected.length;
         })
         .catch(err => console.error('Failed to update players list:', err));
-}, 500);
+    }, 500);
+
+
+    setInterval(() => {
+    fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.game_in_progress) {
+                window.location.href = `/game?lobby_id=${encodedLobbyId}`;
+            }
+        })
+        .catch(error => {
+            console.error('Lobby status check failed:', error);
+        });
+        }, 500);
+
+
 </script>
 
 {% endblock %}

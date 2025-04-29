@@ -57,7 +57,7 @@ def generate_player_id(length=8):
 def add_player_to_lobby(player_id, lobby_id):
     if lobby_id not in games:
         return -1, f"Lobby {lobby_id} not found"
-    if games[lobby_id].number_of_players_connected > 4:
+    if games[lobby_id].number_of_players_connected > 3:
         return -2, f"Lobby {lobby_id} is full"
     if player_id in games[lobby_id].players_connected:
         return -3, f"Player {player_id} is already in the lobby {lobby_id}"

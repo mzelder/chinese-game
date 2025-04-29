@@ -3,11 +3,21 @@
 {% block body %}
 <h2>Joining Lobby</h2>
 <br><br><br>
-<form action="/join_lobby" method="post">
-    <input type="text" name="lobby_id" placeholder="Lobby ID" maxlength="10" required>
+<form id="joinLobbyForm" method="post">
+    <input type="text" id="lobbyIdInput" name="lobby_id" placeholder="Lobby ID" maxlength="10" required>
     <br>
     <br>
     <input class="wiggling button" type="submit" value="Join Lobby">
 </form>
+
+<script>
+document.getElementById('joinLobbyForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const lobbyId = document.getElementById('lobbyIdInput').value;
+    if (lobbyId) {
+        window.location.href = `/lobby/${encodeURIComponent(lobbyId)}`;
+    }
+});
+</script>
 
 {% endblock %}

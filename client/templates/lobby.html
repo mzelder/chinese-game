@@ -1,22 +1,65 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+<h2>{% if is_host %}Hosting Lobby{% else %}Joined Lobby{% endif %}</h2>
+<p>Lobby ID: <span id="ID_value">{{ lobby_id }}</span></p>
 
-<h2>Hosting Lobby</h2>
+<!-- Player list visible to everyone -->
+<div id="playerList">
+    <h3>Connected Players ({{ lobby.players_connected|length }}/4):</h3>
+    <ul>
+        {% for player in lobby.players_connected %}
+        <li>{{ player.name }}</li>
+        {% endfor %}
+    </ul>
+</div>
 
-<br>
+{% if is_host %}
+<button id="ID_generator" class="wiggling button">Get New ID</button>
+<script>
+document.getElementById("ID_generator").addEventListener("click", async () => {
+    const currentLobbyId = encodeURIComponent("{{ lobby_id }}");
+    try {
+        const response = await fetch("/generate_new_id", {
+            method: "POST",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `current_lobby_id=${currentLobbyId}`
+        });
+        const data = await response.json();
+        const newLobbyId = encodeURIComponent(data.new_lobby_id);
+        window.location = `/create_lobby/${newLobbyId}`;
+    } catch (error) {
+        console.error("Error generating new ID:", error);
+    }
+});
+</script>
+{% endif %}
 
-<p>Waiting for players..</p>
-
-<br>
-
-<button id="ID_generator" class="wiggling button">Get ID!</button>
-<br>
-<p>Lobby ID: <span id="ID_value">{{ lobby_id }}</span></p> 
-
-<br>
 <form action="/game">
-    <button class="wiggling button" type="submit">Start a game!</button>
+    <button class="wiggling button" type="submit" {% if not is_host %}disabled style="opacity:0.5;"{% endif %}>
+        Start Game!
+    </button>
 </form>
+
+<!-- Auto-refresh player list every 3 seconds -->
+<script>
+    // Store lobby_id from template and encode it
+    const lobbyId = "{{ lobby_id }}";
+    const encodedLobbyId = encodeURIComponent(lobbyId);
+    
+    setInterval(() => {
+        fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('playerList').innerHTML = `
+                    <h3>Connected Players (${data.players_connected.length}/4):</h3>
+                    <ul>
+                        ${data.players_connected.map(p => `<li>${p.name}</li>`).join('')}
+                    </ul>
+                `;
+            });
+    }, 1000);
+    </script>
+    
 
 {% endblock %}

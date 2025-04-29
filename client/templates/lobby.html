@@ -27,7 +27,7 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
         });
         const data = await response.json();
         const newLobbyId = encodeURIComponent(data.new_lobby_id);
-        window.location = `/create_lobby/${newLobbyId}`;
+        window.location = `/lobby/${newLobbyId}`;
     } catch (error) {
         console.error("Error generating new ID:", error);
     }

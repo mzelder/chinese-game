@@ -14,6 +14,8 @@
     </ul>
 </div>
 
+    
+
 {% if is_host %}
 <button id="ID_generator" class="wiggling button">Get New ID</button>
 <script>
@@ -35,8 +37,9 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
 </script>
 {% endif %}
 
-<form action="/game">
-    <button class="wiggling button" type="submit" {% if not is_host %}disabled style="opacity:0.5;"{% endif %}>
+<form action="/start_game" method="post">
+    <input type="hidden" name="lobby_id" value="{{ lobby_id }}">
+    <button class="wiggling button" type="submit" {% if not is_host %}disabled{% endif %}>
         Start Game!
     </button>
 </form>
@@ -57,6 +60,16 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
                         ${data.players_connected.map(p => `<li>${p.name}</li>`).join('')}
                     </ul>
                 `;
+            });
+    }, 1000);
+
+    setInterval(() => {
+        fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.game_in_progress) {
+                    window.location.href = `/game?lobby_id=${encodedLobbyId}`;
+                }
             });
     }, 1000);
     </script>

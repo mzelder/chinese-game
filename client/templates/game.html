@@ -1,49 +1,72 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<h3>Lobby ID:  </h3> 
+<h3>Lobby ID:  </h3>
 
 <canvas id="myCanvas"></canvas>
-
+<button id="diceRollButton" class="button">Roll Dice</button>
 
 <script>
+    let boardIndexes = {};
+    
     const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 2048;
-        canvas.height = 2048;
+    const ctx = canvas.getContext('2d');
+    canvas.width = 2048;
+    canvas.height = 2048;
 
-        //ctx.fillStyle = "white";
-        //ctx.fillRect(0, 0, 2048, 2048);
+    function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(midX, midY);
+        ctx.lineTo(endX, endY);
+        ctx.closePath();
+        ctx.fillStyle=color;
+        ctx.fill();
+    }
+
+    function buildPart(rows, cols, size, gap, startX, startY) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                let x = startX + col * (size + gap);
+                let y = startY + row * (size + gap);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x, y, size, size);
+            }
+        }
+    }
+
+    function paintPart(rows, cols, size, gap, startX, startY, color) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                let x = startX + col * (size + gap);
+                let y = startY + row * (size + gap);
+                ctx.fillStyle = color;
+                ctx.fillRect(x + 7, y + 7, size - 4, size - 4);
+            }
+        }
+    }
+
+    // 🛠 Full board drawing in one place
+    function drawBoard() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        //ctx.fillStyle = "red";
-        //ctx.fillRect(0, 1023, 2048, 2);
-        //ctx.fillRect(1023, 0, 2, 2048);
-
-
+        // Center black square
         ctx.fillStyle = "black";
         ctx.fillRect(1009, 1009, 30, 30);
 
+        // Center square outline
         ctx.strokeStyle = "black";
         ctx.lineWidth = 6;
         ctx.strokeRect(869, 869, 310, 310);
 
-        function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
-            
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(midX, midY);
-            ctx.lineTo(endX, endY);
-            ctx.closePath();
-            ctx.fillStyle=color;
-            ctx.fill();
-
-        }
-
+        // Center triangles
         metaQuarter(871, 871, 1024, 1024, 1177, 871, "#3A6FC0");
         metaQuarter(871, 1177, 1024, 1024, 871, 871, "#E85B5B");
         metaQuarter(1177, 871, 1024, 1024, 1177, 1177, "#D4AF37");
         metaQuarter(871, 1177, 1024, 1024, 1177, 1177, "#46A463");
 
+        // Center cross lines
         ctx.beginPath();
         ctx.moveTo(869, 869);
         ctx.lineTo(1179, 1179);
@@ -53,63 +76,154 @@
         ctx.lineTo(869, 1179);
         ctx.stroke();
 
-        function buildPart(rows, cols, size, gap, startX, startY) {
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    let x = startX + col * (size + gap);
-                    let y = startY + row * (size + gap);
-                    
-                    ctx.strokeStyle = "black"
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect(x, y, size, size)
-                }
-            }
+        // Paths
+        buildPart(6, 3, 100, 5, 869, 238);    // top
+        buildPart(3, 6, 100, 5, 238, 869);    // left
+        buildPart(3, 6, 100, 5, 1185, 869);   // right
+        buildPart(6, 3, 100, 5, 869, 1185);   // bottom
+
+        // Colored paths
+        paintPart(5, 1, 100, 5, 969, 338, "#3A6FC0");   // blue top
+        paintPart(1, 5, 100, 5, 338, 969, "#E85B5B");   // red left
+        paintPart(1, 5, 100, 5, 1180, 969, "#D4AF37");  // yellow right
+        paintPart(5, 1, 100, 5, 969, 1180, "#46A463");  // green bottom
+
+        // Start squares
+        paintPart(1, 1, 100, 5, 1074, 338, "#3A6FC0");  // blue start
+        paintPart(1, 1, 100, 5, 338, 864, "#E85B5B");   // red start
+        paintPart(1, 1, 100, 5, 1600, 1074, "#D4AF37"); // yellow start
+        paintPart(1, 1, 100, 5, 864, 1600, "#46A463");  // green start
+
+        // Home bases (lobbies)
+        buildPart(2, 2, 150, 100, 338, 1300);           // blue lobby
+        buildPart(2, 2, 150, 100, 338, 338);             // red lobby
+        buildPart(2, 2, 150, 100, 1300, 1300);           // yellow lobby
+        buildPart(2, 2, 150, 100, 1300, 338);            // green lobby
+
+        // Color inside home bases
+        paintPart(2, 2, 150, 100, 1295, 333, "#3A6FC0");    // blue
+        paintPart(2, 2, 150, 100, 333, 333, "#E85B5B");     // red
+        paintPart(2, 2, 150, 100, 1295, 1295, "#D4AF37");   // yellow
+        paintPart(2, 2, 150, 100, 333, 1295, "#46A463");    // green
+
+        drawNumbersOnPathSquares();
+    }
+
+    // Draw once initially
+    drawBoard();
+    drawPawn(1370, 400, "#3A6FC0"); // Blue pawn
+    drawPawn(1630, 400, "#3A6FC0"); // Blue pawn 2
+    drawPawn(1370, 650, "#3A6FC0"); // Blue pawn 3
+    drawPawn(1630, 650, "#3A6FC0"); // Blue pawn 4
+
+    drawPawn(400, 400, "#E85B5B"); // Red pawn 1
+    drawPawn(650, 400, "#E85B5B"); // Red pawn 2
+    drawPawn(400, 650, "#E85B5B"); // Red pawn 3
+    drawPawn(650, 650, "#E85B5B"); // Red pawn 4
+
+    drawPawn(400, 1370, "#46A463"); // Green pawn 1
+    drawPawn(650, 1370, "#46A463"); // Green pawn 2
+    drawPawn(400, 1630, "#46A463"); // Green pawn 3
+    drawPawn(650, 1630, "#46A463"); // Green pawn 4
+
+    drawPawn(1370, 1370, "#D4AF37"); // Yellow pawn 1
+    drawPawn(1630, 1370, "#D4AF37"); // Yellow pawn 2
+    drawPawn(1370, 1630, "#D4AF37"); // Yellow pawn 3
+    drawPawn(1630, 1630, "#D4AF37"); // Yellow pawn 4
+
+    // Dice roll logic
+    const diceRollButton = document.getElementById('diceRollButton');
+    diceRollButton.addEventListener('click', function() {
+        const diceValue = Math.floor(Math.random() * 6) + 1; // Random 1-6
+        displayDiceRoll(diceValue);
+    });
+
+    function displayDiceRoll(value) {
+        drawBoard();  // 🛠 Always redraw full board first
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText(`Rolled: ${value}`, canvas.width / 2 - 150, 100);
+    }
+
+    function drawPawn(x, y, color="blue") {
+        ctx.beginPath();
+        ctx.arc(x, y, 30, 0, Math.PI * 2);  // Circle pawn
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+    }
+
+    function drawNumbersOnPathSquares() {
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Top path: 6 rows x 3 cols
+    const numbers1 = [1,2,3,52,"b1",4,51,"b2",5,50,"b3",6,49,"b4",7,48,"b5",8,50,"b6",9];
+    let counter = 0;
+    for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 3; col++) {
+            let x = 869 + col * (100 + 5);
+            let y = 238 + row * (100 + 5);
+            const value = numbers1[counter];
+            ctx.fillText(value, x + 50, y + 50);
+            boardIndexes[value] = { x: x + 50, y: y + 50 };
+            counter++;
         }
+    }
 
-        function paintPart(rows, cols, size, gap, startX, startY, color) {
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    let x = startX + col * (size + gap);
-                    let y = startY + row * (size + gap);
+    // Right path: 3 rows x 6 cols
+    const numbers2 = [9,10,11,12,13,14,"y5","y4","y3","y2","y1",15,21,20,19,18,17,16];
+    counter = 0;
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 6; col++) {
+            let x = 1185 + col * (100 + 5);
+            let y = 869 + row * (100 + 5);
+            const value = numbers2[counter];
+            ctx.fillText(value, x + 50, y + 50);
+            boardIndexes[value] = { x: x + 50, y: y + 50 };
+            counter++;
+        }
+    }
 
-                ctx.fillStyle = color;
-                ctx.fillRect(x+7, y+7, size-4, size-4);
+    // Bottom path: 6 rows x 3 cols
+    const numbers3 = [34,"g5",22,33,"g4",23,32,"g3",24,31,"g2",25,30,"g1",26,29,28,27];
+    counter = 0;
+    for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 3; col++) {
+            let x = 869 + col * (100 + 5);
+            let y = 1185 + row * (100 + 5);
+            const value = numbers3[counter];
+            ctx.fillText(value, x + 50, y + 50);
+            boardIndexes[value] = { x: x + 50, y: y + 50 };
+            counter++;
+        }
+    }
+
+    // Left path: 3 rows x 6 cols (REVERSED order)
+    let numbers4 = [42,43,44,45,46,47,41,"r1","r2","r3","r4","r5",40,39,38,37,36,35];
+    numbers4.reverse();
+    counter = 0;
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 6; col++) {
+            let x = 769 - col * (100 + 5);
+            let y = 1085 - row * (100 + 5);
+            const value = numbers4[counter];
+            ctx.fillText(value, x + 50, y + 50);
+            boardIndexes[value] = { x: x + 50, y: y + 50 };
+            counter++;
         }
     }
 }
-        
-        buildPart(6, 3, 100, 5, 869, 238);      //top       
-        buildPart(3, 6, 100, 5, 238, 869);      //left
-        buildPart(3, 6, 100, 5, 1185, 869);     //right
-        buildPart(6, 3, 100, 5, 869, 1185);     //bottom
-        
 
-        paintPart(5, 1, 100, 5, 969, 338, "#3A6FC0");   //blue top 
-        paintPart(1, 5, 100, 5, 338, 969, "#E85B5B");   //red left
-        paintPart(1, 5, 100, 5, 1180, 969, "#D4AF37");  //yellow right
-        paintPart(5, 1, 100, 5, 969, 1180, "#46A463");  //green bottom
-        
-        paintPart(1, 1, 100, 5, 1074, 338, "#3A6FC0");  //blue start
-        paintPart(1, 1, 100, 5, 338, 864, "#E85B5B");   //red start   
-        paintPart(1, 1, 100, 5, 1600, 1074, "#D4AF37"); //yellow start
-        paintPart(1, 1, 100, 5, 864, 1600, "#46A463");  //green start
-
-        buildPart(2, 2, 150, 100, 338, 1300);           //blue lobby 
-        buildPart(2, 2, 150, 100, 338, 338);            //red lobby
-        buildPart(2, 2, 150, 100, 1300, 1300);          //yellow lobby
-        buildPart(2, 2, 150, 100, 1300, 338);           //green lobby
-
-        paintPart(2, 2, 150, 100, 1295, 333, "#3A6FC0");    //blue
-        paintPart(2, 2, 150, 100, 333, 333, "#E85B5B");     //red
-        paintPart(2, 2, 150, 100, 1295, 1295, "#D4AF37");   //yellow
-        paintPart(2, 2, 150, 100, 333, 1295, "#46A463");    //green
-        
+function hello() {
+    Object.values(boardIndexes).forEach(element => {
+        ctx.fillText(0, element.x, element.y);
+    });
+}
 </script>
-
-<svg id="pawn_blue" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.11 120.24">
-  <path class="pawn_blue" d="M41.69,110.5c6.88-.3,19.48-.19,22.18-7.91,1.16-4.76-.2-9.23-.88-15.36-.85-5.71-1.36-11.32-2.94-16.81-1.44-5.01-2.79-11-4.85-15.91-1.97-4.22-4.11-9.31-1.86-13.81,1.58-3.6,3.7-7.12,4-11.12.65-8.61-7.26-15.93-15.74-15.81-8.48-.11-16.39,7.18-15.74,15.81.3,4,2.42,7.52,4,11.12,2.26,4.51.1,9.59-1.86,13.81-2.06,4.91-3.41,10.9-4.84,15.91-1.59,5.49-2.09,11.1-2.94,16.81-.67,6.14-2.04,10.59-.88,15.36,2.7,7.73,15.3,7.6,22.18,7.91h.19Z"/>
-</svg>
-
-
 
 {% endblock %}

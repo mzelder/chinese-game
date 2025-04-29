@@ -63,6 +63,8 @@ h3 {
     max-width: 60%;
 }
 
+
+
 .stick-regular {
     font-family: "Stick", sans-serif;
     font-weight: 400;
@@ -164,10 +166,34 @@ canvas {
     stroke-width: 5px;
 }
 
-#pawn_blue {
+#pawn_blue1 {
     position: absolute;
     top: 480px;
-    right: 373px;
+    right: 370px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue2 {
+    position: absolute;
+    top: 480px;
+    right: 630px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue3 {
+    position: absolute;
+    top: 480px;
+    right: 630px;
+    width: 100px;
+    height: auto;
+}
+
+#pawn_blue4 {
+    position: absolute;
+    top: 700px;
+    right: 630px;
     width: 100px;
     height: auto;
 }
@@ -195,3 +221,26 @@ canvas {
     width: 15vw;
     height: auto;
 }*/
+
+.error-container {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+    color: #d32f2f;
+    font-family: 'Stick', sans-serif;
+}
+
+.error-title {
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    margin-bottom: 40px;
+}

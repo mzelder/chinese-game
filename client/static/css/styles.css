@@ -63,7 +63,34 @@ h3 {
     max-width: 60%;
 }
 
+h4 {
+    font-size: 2.5vw;
+    color: #d32f2f;
+    max-width: 60%;
+    margin: 0 auto;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 
+li {
+    list-style: none;
+    padding: 12px 20px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    font-size: 1.4rem;
+    color: #ffffff;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+li:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+}
 
 .stick-regular {
     font-family: "Stick", sans-serif;

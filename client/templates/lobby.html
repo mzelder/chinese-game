@@ -1,18 +1,23 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<h2>{% if is_host %}Hosting Lobby{% else %}Joined Lobby{% endif %}</h2>
+<h3>{% if is_host %}Hosting Lobby{% else %}Joined Lobby{% endif %}</h3>
 <p>Lobby ID: <span id="ID_value">{{ lobby_id }}</span></p>
 
 <!-- Player list visible to everyone -->
 <div id="playerList">
-    <h3>Connected Players ({{ lobby.players_connected|length }}/4):</h3>
-    <ul>
+    <h4>Connected Players</h4>
+     <h4>(<span id="playersCount">{{ lobby.players_connected|length }}</span>/4)</h4>
+    <br>
+    <ul id="playerListUL">
         {% for player in lobby.players_connected %}
         <li>{{ player.name }}</li>
         {% endfor %}
     </ul>
+    <br>
 </div>
+
+    
 
 {% if is_host %}
 <button id="ID_generator" class="wiggling button">Get New ID</button>
@@ -27,7 +32,7 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
         });
         const data = await response.json();
         const newLobbyId = encodeURIComponent(data.new_lobby_id);
-        window.location = `/create_lobby/${newLobbyId}`;
+        window.location = `/lobby/${newLobbyId}`;
     } catch (error) {
         console.error("Error generating new ID:", error);
     }
@@ -35,31 +40,52 @@ document.getElementById("ID_generator").addEventListener("click", async () => {
 </script>
 {% endif %}
 
-<form action="/game">
-    <button class="wiggling button" type="submit" {% if not is_host %}disabled style="opacity:0.5;"{% endif %}>
+<form action="/start_game" method="post">
+    <input type="hidden" name="lobby_id" value="{{ lobby_id }}">
+    <button class="wiggling button" type="submit" {% if not is_host %}disabled{% endif %}>
         Start Game!
     </button>
 </form>
 
-<!-- Auto-refresh player list every 3 seconds -->
+<!-- Auto-refresh ONLY the <ul> every 3 seconds -->
 <script>
-    // Store lobby_id from template and encode it
     const lobbyId = "{{ lobby_id }}";
     const encodedLobbyId = encodeURIComponent(lobbyId);
-    
+        
+    const list = document.getElementById('playerListUL');
+    const playersCount = document.getElementById('playersCount');
+        
     setInterval(() => {
-        fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('playerList').innerHTML = `
-                    <h3>Connected Players (${data.players_connected.length}/4):</h3>
-                    <ul>
-                        ${data.players_connected.map(p => `<li>${p.name}</li>`).join('')}
-                    </ul>
-                `;
+        
+    fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
+        .then(response => response.json())
+        .then(data => {
+            list.innerHTML = '';
+            data.players_connected.forEach(player => {
+                const li = document.createElement('li');
+                li.textContent = player.name;
+                list.appendChild(li);
             });
-    }, 1000);
-    </script>
-    
+            playersCount.textContent = data.players_connected.length;
+        })
+        .catch(err => console.error('Failed to update players list:', err));
+    }, 500);
+
+
+    setInterval(() => {
+    fetch(`/lobby_status?lobby_id=${encodedLobbyId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.game_in_progress) {
+                window.location.href = `/game?lobby_id=${encodedLobbyId}`;
+            }
+        })
+        .catch(error => {
+            console.error('Lobby status check failed:', error);
+        });
+        }, 500);
+
+
+</script>
 
 {% endblock %}

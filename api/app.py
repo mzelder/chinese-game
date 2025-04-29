@@ -54,10 +54,34 @@ def join_lobby():
     return render_template("join_lobby.html")
 
 
+@app.route("/start_game", methods=["POST"])
+def start_game():
 
-@app.route('/game')
+    player_id = request.cookies.get("player_id")
+    lobby_id = request.form.get("lobby_id")
+
+    # Validate host and start game
+    lobby = lobby_handler.games.get(lobby_id)
+    if not lobby or lobby.host_id != player_id:
+        return "Not authorized", 403
+    
+    lobby.game_in_progress = True
+    return redirect(url_for("game", lobby_id=lobby_id))
+
+
+
+@app.route("/game")
 def game():
-    return render_template('game.html')
+    lobby_id = request.args.get("lobby_id")
+    player_id = request.cookies.get("player_id")
+    
+    # Validate player is in the lobby and game started
+    lobby = lobby_handler.games.get(lobby_id)
+    if not lobby or player_id not in lobby.players_connected or not lobby.game_in_progress:
+        return redirect(url_for("home"))
+    
+    return render_template("game.html", lobby_id=lobby_id)
+
 
 
 @app.route("/data")
@@ -68,13 +92,17 @@ def get_data():
 @app.route("/lobby_status")
 def lobby_status():
     lobby_id = request.args.get("lobby_id")
+    if not lobby_id:
+        return jsonify({"error": "Missing lobby_id"}), 400
+    
     lobby = lobby_handler.games.get(lobby_id)
     if not lobby:
         return jsonify({"error": "Lobby not found"}), 404
     
-    # Convert player IDs to objects with 'name'
-    players = [{"name": pid[:4]} for pid in lobby.players_connected]  # Use first 4 chars as name
-    return jsonify({"players_connected": players})
+    return jsonify({
+        "game_in_progress": lobby.game_in_progress,  # Add this line
+        "players_connected": [{"name": pid[:4]} for pid in lobby.players_connected]
+    })
 
 
 

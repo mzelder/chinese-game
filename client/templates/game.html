@@ -29,7 +29,20 @@
         {id: 'yellow3', x: 1370, y: 1630, color: '#D4AF37'},
         {id: 'yellow4', x: 1630, y: 1630, color: '#D4AF37'},
     ];
-    
+    let playerId = localStorage.getItem("player_id");
+    let lobbyId = localStorage.getItem("lobby_id");
+
+    fetch(`/get_player_color?player_id=${playerId}&lobby_id=${lobbyId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.color) {
+                playerColor = data.color;
+            } else {
+                alert("Nie udało się pobrać koloru gracza.");
+        }
+    });
+    let currentTurn = 'blue';   // nadal pobierane przez /get_turn
+    let playerColor = null;     // ustawiamy dopiero po fetchu
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 2048;
@@ -333,10 +346,21 @@ function onPawnClick(event) {
 
             // 🛑 Stop listening after move
             canvas.removeEventListener('click', onPawnClick);
+            fetch('/end_turn', { method: 'POST' });
             break;
         }
     }
 }
+function fetchTurn() {
+    fetch('/get_turn')
+        .then(response => response.json())
+        .then(data => {
+            currentTurn = data.turn;
+            document.getElementById('diceRollButton').disabled = (currentTurn !== playerColor);
+        });
+}
+
+setInterval(fetchTurn, 2000);
 
 
 

@@ -37,3 +37,31 @@ def page_not_found(e):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+current_turn = {'turn': 'blue'}
+
+@app.route('/get_turn', methods=['GET'])
+def get_turn():
+    return jsonify(current_turn)
+
+@app.route('/end_turn', methods=['POST'])
+def end_turn():
+    player_order = ['blue', 'red', 'green', 'yellow']
+    current = current_turn['turn']
+    next_index = (player_order.index(current) + 1) % len(player_order)
+    current_turn['turn'] = player_order[next_index]
+    return jsonify({"next_turn": current_turn['turn']})
+
+@app.route('/get_player_color', methods=['GET'])
+def get_player_color():
+    player_id = request.args.get('player_id')
+    lobby_id = request.args.get('lobby_id')
+
+    if lobby_id not in games:
+        return jsonify({'error': 'Lobby not found'}), 404
+    lobby = games[lobby_id]
+
+    color = lobby.player_colors.get(player_id)
+    if color is None:
+        return jsonify({'error': 'Player not found'}), 404
+    return jsonify({'color': color})

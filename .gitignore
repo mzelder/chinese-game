@@ -1,1 +1,3 @@
 __pycache__/
+api/lobby_handler.py
+client/templates/game.html

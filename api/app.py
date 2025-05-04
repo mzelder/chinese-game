@@ -117,12 +117,21 @@ def get_turn():
     return jsonify(current_turn)
 
 @app.route('/end_turn', methods=['POST'])
+
+@app.route('/end_turn', methods=['POST'])
 def end_turn():
-    player_order = ['blue', 'red', 'green', 'yellow']
-    current = current_turn['turn']
-    next_index = (player_order.index(current) + 1) % len(player_order)
-    current_turn['turn'] = player_order[next_index]
-    return jsonify({"next_turn": current_turn['turn']})
+    data = request.json
+    lobby_id = data['lobby_id']
+    rolled = data['dice_value']
+
+    lobby = games[lobby_id]
+    if rolled != 6:
+        current = lobby.player_on_the_move
+        players = lobby.players_connected
+        index = players.index(current)
+        next_index = (index + 1) % len(players)
+        lobby.player_on_the_move = players[next_index]
+    return jsonify({'next_turn': lobby.player_on_the_move})
 
 @app.route('/get_player_color', methods=['GET'])
 def get_player_color():

@@ -32,21 +32,28 @@
     let playerId = localStorage.getItem("player_id");
     let lobbyId = localStorage.getItem("lobby_id");
 
+    let playerColor = null;
+
     fetch(`/get_player_color?player_id=${playerId}&lobby_id=${lobbyId}`)
         .then(response => response.json())
         .then(data => {
             if (data.color) {
                 playerColor = data.color;
+                console.log("Player color: ", playerColor);
+                // Możesz tu aktywować pionki jeśli diceValue już był rzucony
             } else {
                 alert("Nie udało się pobrać koloru gracza.");
-        }
-    });
-    let currentTurn = 'blue';   // nadal pobierane przez /get_turn
-    let playerColor = null;     // ustawiamy dopiero po fetchu
+            }
+        });
+    
+    let currentTurn = 'blue';       
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 2048;
     canvas.height = 2048;
+    if (playerColor === currentTurn && diceValue > 0) {
+    activatePlayerPawns(); 
+    }
 
     function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
         ctx.beginPath();
@@ -57,6 +64,17 @@
         ctx.fillStyle=color;
         ctx.fill();
     }
+
+    if (pawnIsInBase(pawn)) {
+        if (diceValue === 6) {
+            movePawnOutOfBase(pawn);
+        } else {
+            alert("Musisz wyrzucić 6, by wyjść z bazy");
+        }
+    } else {
+        movePawn(pawn, diceValue);
+    }
+
 
     function buildPart(rows, cols, size, gap, startX, startY) {
         for (let row = 0; row < rows; row++) {

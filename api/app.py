@@ -110,6 +110,44 @@ def lobby_status():
 def jError():
     return render_template("joining_code_Error.html")
 
+current_turn = {'turn': 'blue'}
+
+@app.route('/get_turn', methods=['GET'])
+def get_turn():
+    return jsonify(current_turn)
+
+@app.route('/end_turn', methods=['POST'])
+
+@app.route('/end_turn', methods=['POST'])
+def end_turn():
+    data = request.json
+    lobby_id = data['lobby_id']
+    rolled = data['dice_value']
+
+    lobby = games[lobby_id]
+    if rolled != 6:
+        current = lobby.player_on_the_move
+        players = lobby.players_connected
+        index = players.index(current)
+        next_index = (index + 1) % len(players)
+        lobby.player_on_the_move = players[next_index]
+    return jsonify({'next_turn': lobby.player_on_the_move})
+
+@app.route('/get_player_color', methods=['GET'])
+def get_player_color():
+    player_id = request.args.get('player_id')
+    lobby_id = request.args.get('lobby_id')
+
+    if lobby_id not in games:
+        return jsonify({'error': 'Lobby not found'}), 404
+    lobby = games[lobby_id]
+
+    color = lobby.player_colors.get(player_id)
+    if color is None:
+        return jsonify({'error': 'Player not found'}), 404
+    return jsonify({'color': color})
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

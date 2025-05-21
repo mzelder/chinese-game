@@ -45,6 +45,8 @@ def fetch_board():
     target_destination = data.get('target_destination')
     lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
 
+    return jsonify({"status": "received"}), 200
+
 '''
 @app.route("/dummy_fetch")
 def dummy_fetch():

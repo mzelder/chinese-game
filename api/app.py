@@ -36,6 +36,27 @@ def lobby_page(lobby_id):
     
     return render_template('lobby.html', lobby_id=lobby_id, is_host=is_host, lobby=lobby)
 
+@app.route("/fetch_board", methods=['POST'])
+def fetch_board():
+    data = request.get_json()
+    lobby_id = data.get('lobby_id')
+    color = data.get('color')
+    pawn_idx = data.get('pawn_idx')
+    target_destination = data.get('target_destination')
+    lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
+
+'''
+@app.route("/dummy_fetch")
+def dummy_fetch():
+    import random
+
+    lobby_id = random.choice(list(lobby_handler.games))
+    color = 'red'
+    pawn_idx = 2
+    target_destination = 5
+    lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
+'''
+
 @app.route("/generate_new_id", methods=["POST"])
 def generate_new_id():
     player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()

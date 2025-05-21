@@ -8,26 +8,32 @@
 
 <script>
     boardIndexes = {};
+    finishLineIndices = {
+        'red':['r1', 'r2', 'r3', 'r4', 'r5'],
+        'blue':['b1', 'b2', 'b3', 'b4', 'b5'],
+        'green':['g1', 'g2', 'g3', 'g4', 'g5'],
+        'yellow':['y1', 'y2', 'y3', 'y4', 'y5']
+    }
     let pawns = [
-        {id: 'blue1', x: 1370, y: 400, color: '#3A6FC0'},
-        {id: 'blue2', x: 1630, y: 400, color: '#3A6FC0'},
-        {id: 'blue3', x: 1370, y: 650, color: '#3A6FC0'},
-        {id: 'blue4', x: 1630, y: 650, color: '#3A6FC0'},
+        {id: 'blue1', x: 1370, y: 400, color: '#3A6FC0', movesLeft: 50},
+        {id: 'blue2', x: 1630, y: 400, color: '#3A6FC0', movesLeft: 50},
+        {id: 'blue3', x: 1370, y: 650, color: '#3A6FC0', movesLeft: 50},
+        {id: 'blue4', x: 1630, y: 650, color: '#3A6FC0', movesLeft: 50},
 
-        {id: 'red1', x: 400, y: 400, color: '#E85B5B'},
-        {id: 'red2', x: 650, y: 400, color: '#E85B5B'},
-        {id: 'red3', x: 400, y: 650, color: '#E85B5B'},
-        {id: 'red4', x: 650, y: 650, color: '#E85B5B'},
+        {id: 'red1', x: 400, y: 400, color: '#E85B5B', movesLeft: 50},
+        {id: 'red2', x: 650, y: 400, color: '#E85B5B', movesLeft: 50},
+        {id: 'red3', x: 400, y: 650, color: '#E85B5B', movesLeft: 50},
+        {id: 'red4', x: 650, y: 650, color: '#E85B5B', movesLeft: 50},
 
-        {id: 'green1', x: 400, y: 1370, color: '#46A463'},
-        {id: 'green2', x: 650, y: 1370, color: '#46A463'},
-        {id: 'green3', x: 400, y: 1630, color: '#46A463'},
-        {id: 'green4', x: 650, y: 1630, color: '#46A463'},
+        {id: 'green1', x: 400, y: 1370, color: '#46A463', movesLeft: 50},
+        {id: 'green2', x: 650, y: 1370, color: '#46A463', movesLeft: 50},
+        {id: 'green3', x: 400, y: 1630, color: '#46A463', movesLeft: 50},
+        {id: 'green4', x: 650, y: 1630, color: '#46A463', movesLeft: 50},
 
-        {id: 'yellow1', x: 1370, y: 1370, color: '#D4AF37'},
-        {id: 'yellow2', x: 1630, y: 1370, color: '#D4AF37'},
-        {id: 'yellow3', x: 1370, y: 1630, color: '#D4AF37'},
-        {id: 'yellow4', x: 1630, y: 1630, color: '#D4AF37'},
+        {id: 'yellow1', x: 1370, y: 1370, color: '#D4AF37', movesLeft: 50},
+        {id: 'yellow2', x: 1630, y: 1370, color: '#D4AF37', movesLeft: 50},
+        {id: 'yellow3', x: 1370, y: 1630, color: '#D4AF37', movesLeft: 50},
+        {id: 'yellow4', x: 1630, y: 1630, color: '#D4AF37', movesLeft: 50},
     ];
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -296,6 +302,8 @@ function choosePawn(diceValue) {
             const distance = Math.hypot(clickX - pawn.x, clickY - pawn.y);
             if (distance < 30) { // Inside the pawn
                 console.log('You clicked pawn:', pawn.id);
+                pawn_idx = pawn.id[pawn.id.length-1];
+                color = pawn.id.slice(0, pawn.id.length-1);
 
                 // Find current pawn position (index)
                 let currentIndex = Object.keys(boardIndexes).find(key => {
@@ -303,9 +311,9 @@ function choosePawn(diceValue) {
                     return Math.abs(pos.x - pawn.x) < 5 && Math.abs(pos.y - pawn.y) < 5;
                 });
 
-                //console.log('Current index:', currentIndex);
+                console.log('Current index before:', currentIndex);
 
-                if (!currentIndex || isNaN(currentIndex)) {
+                if (!currentIndex){
                     // Pawn is at home (base), can only move if dice is 6
                     if (diceValue === 6) {
                         let startSquare;
@@ -325,13 +333,24 @@ function choosePawn(diceValue) {
                         // alert("You need to roll a 6 to move a pawn out of the base!");
                     }
                 } else {
-                    // Pawn is already on the board, can move normally
-                    let newIndex = parseInt(currentIndex) + diceValue;
-                    if (newIndex > 52) newIndex = newIndex - 52; // Wrap around if necessary
-                    if (boardIndexes[newIndex]) {
-                        pawn.x = boardIndexes[newIndex].x;
-                        pawn.y = boardIndexes[newIndex].y;
+
+                    pawn.movesLeft -= diceValue;
+                    console.log(pawn.movesLeft);
+                    console.log(color);
+                    console.log('Current index after:', currentIndex);
+                    if (pawn.movesLeft < 0){
+                        let finishLineIdx = Math.abs(pawn.movesLeft) - 1
+                        pawn.x = boardIndexes[finishLineIndices[color][finishLineIdx]].x;
+                        pawn.y = boardIndexes[finishLineIndices[color][finishLineIdx]].y;
                         drawBoard();
+                    } else {
+                        let newIndex = parseInt(currentIndex) + diceValue;
+                        if (newIndex > 52) newIndex = newIndex - 52; // Wrap around if necessary
+                        if (boardIndexes[newIndex]) {
+                            pawn.x = boardIndexes[newIndex].x;
+                            pawn.y = boardIndexes[newIndex].y;
+                            drawBoard();
+                        }
                     }
                 }
 

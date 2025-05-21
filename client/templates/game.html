@@ -30,10 +30,48 @@
         {id: 'yellow4', x: 1630, y: 1630, color: '#D4AF37'},
     ];
     
+    const urlParams = new URLSearchParams(window.location.search);
+    const lobbyIdRaw = urlParams.get('lobby_id');
+    const lobbyId = decodeURIComponent(lobbyIdRaw);
+
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 2048;
     canvas.height = 2048;
+
+    let color;
+    let pawn_idx;
+    let target_destination;
+    
+    // setInterval(async () => {
+    //     try {
+    //         const response = await fetch('/data');
+    //         const data = await response.json();
+    //         const boardData = data[lobbyId].board_status;    
+    //         console.log(boardData);
+    //     } catch (error) {
+    //         console.error('Fetch error:', error);
+    //     }
+    // }, 1000);
+
+    function sendData() {
+        fetch("/fetch_board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                    lobby_id: lobbyId,
+                    color: "color",
+                    pawn_idx: "pawn_idx",
+                    target_destination: "destination"
+                })
+        });
+        console.log(`LobbyID: ${lobbyId}`);
+        console.log(`Color: ${color}`);
+        console.log(`pawn_idx: ${pawn_idx}`);
+        console.log(`Target_Destination: ${target_destination}`);
+    }
 
     function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
         ctx.beginPath();
@@ -169,7 +207,7 @@
     }
 
     function drawPawn(x, y, color="blue") {
-        ctx.beginPath();
+        ctx.beginPath();  
         ctx.arc(x, y, 30, 0, Math.PI * 2);  // Circle pawn
         ctx.fillStyle = color;
         ctx.fill();
@@ -265,7 +303,7 @@ function choosePawn(diceValue) {
                     return Math.abs(pos.x - pawn.x) < 5 && Math.abs(pos.y - pawn.y) < 5;
                 });
 
-                console.log('Current index:', currentIndex);
+                //console.log('Current index:', currentIndex);
 
                 if (!currentIndex || isNaN(currentIndex)) {
                     // Pawn is at home (base), can only move if dice is 6
@@ -284,7 +322,7 @@ function choosePawn(diceValue) {
                         pawn.y = boardIndexes[startSquare].y;
                         drawBoard();
                     } else {
-                        alert("You need to roll a 6 to move a pawn out of the base!");
+                        // alert("You need to roll a 6 to move a pawn out of the base!");
                     }
                 } else {
                     // Pawn is already on the board, can move normally
@@ -314,6 +352,9 @@ function onPawnClick(event) {
         const distance = Math.hypot(clickX - pawn.x, clickY - pawn.y);
         if (distance < 30) { // Inside the pawn
             console.log('You clicked pawn:', pawn.id);
+            pawn_idx = pawn.id[pawn.id.length-1];
+            color = pawn.id.slice(0, pawn.id.length-2);
+            console.log(color);
 
             let startSquare;
             if (pawn.color === "#3A6FC0") {          // Blue
@@ -338,13 +379,6 @@ function onPawnClick(event) {
     }
 }
 
-
-
-function hello() {
-    Object.values(boardIndexes).forEach(element => {
-        ctx.fillText(0, element.x, element.y);
-    });
-}
 </script>
 
 {% endblock %}

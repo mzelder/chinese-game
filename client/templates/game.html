@@ -7,6 +7,7 @@
 <button id="diceRollButton" class="button">Roll Dice</button>
 
 <script>
+    disablePawn = false;
     boardIndexes = {};
     finishLineIndices = {
         'red':['r1', 'r2', 'r3', 'r4', 'r5'],
@@ -68,9 +69,9 @@
             },
             body: JSON.stringify({
                     lobby_id: lobbyId,
-                    color: "color",
-                    pawn_idx: "pawn_idx",
-                    target_destination: "destination"
+                    color: color,
+                    pawn_idx: pawn_idx,
+                    target_destination: target_destination
                 })
         });
         console.log(`LobbyID: ${lobbyId}`);
@@ -342,6 +343,7 @@ function choosePawn(diceValue) {
                         let finishLineIdx = Math.abs(pawn.movesLeft) - 1
                         pawn.x = boardIndexes[finishLineIndices[color][finishLineIdx]].x;
                         pawn.y = boardIndexes[finishLineIndices[color][finishLineIdx]].y;
+                        target_destination = finishLineIndices[color][finishLineIdx];
                         drawBoard();
                     } else {
                         let newIndex = parseInt(currentIndex) + diceValue;
@@ -350,8 +352,10 @@ function choosePawn(diceValue) {
                             pawn.x = boardIndexes[newIndex].x;
                             pawn.y = boardIndexes[newIndex].y;
                             drawBoard();
+                            target_destination = newIndex;
                         }
                     }
+                    
                 }
 
                 canvas.removeEventListener('click', onClick);

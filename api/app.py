@@ -97,6 +97,7 @@ def start_game():
 def game():
     lobby_id = request.args.get("lobby_id")
     player_id = request.cookies.get("player_id")
+    print(f"JOINING: PLAYER {player_id}")
     
     # Validate player is in the lobby and game started
     lobby = lobby_handler.games.get(lobby_id)
@@ -123,8 +124,9 @@ def lobby_status():
         return jsonify({"error": "Lobby not found"}), 404
     
     return jsonify({
-        "game_in_progress": lobby.game_in_progress,  # Add this line
-        "players_connected": [{"name": pid[:4]} for pid in lobby.players_connected]
+        "game_in_progress": lobby.game_in_progress,
+        "players_connected": [{"name": pid[:4]} for pid in lobby.players_connected],
+        "player_on_the_move" : lobby.player_on_the_move
     })
 
 

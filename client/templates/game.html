@@ -49,17 +49,22 @@
     let color;
     let pawn_idx;
     let target_destination;
+    let boardData;
     
-    // setInterval(async () => {
-    //     try {
-    //         const response = await fetch('/data');
-    //         const data = await response.json();
-    //         const boardData = data[lobbyId].board_status;    
-    //         console.log(boardData);
-    //     } catch (error) {
-    //         console.error('Fetch error:', error);
-    //     }
-    // }, 1000);
+    setInterval(async () => {
+        try {
+            const response = await fetch('/data');
+            const data = await response.json();
+            boardData = data[lobbyId].board_status;    
+            console.log(boardData);
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
+    }, 1000);
+
+    setInterval(() => {
+        updateBoard(boardData);
+    }, 3000);
 
     function sendData() {
         fetch("/fetch_board", {
@@ -79,6 +84,41 @@
         console.log(`pawn_idx: ${pawn_idx}`);
         console.log(`Target_Destination: ${target_destination}`);
     }
+
+    function updateBoard(boardData) {
+        if (!boardData || !boardData.board || !boardData.board.positions) {
+            console.warn("boardData or positions missing");
+            return;
+        }
+
+        let counter = 0; 
+        const colors = ["blue", "green", "red", "yellow"];
+        const pawnNumbers = ["1", "2", "3", "4"]; // renamed to avoid shadowing global `pawns`
+
+        const positions = boardData.board.positions;
+        
+        colors.forEach(color => {
+            pawnNumbers.forEach(pawnNum => {
+                const pos = positions[color]?.[pawnNum];
+                if (pos && boardIndexes[pos]) {
+                    // Update the global pawns array positions for this pawn
+                    // Find the pawn in the global pawns array by id
+                    const pawnId = color + pawnNum;
+                    const pawnObj = pawns.find(p => p.id === pawnId);
+                    if (pawnObj) {
+                        pawnObj.x = boardIndexes[pos].x;
+                        pawnObj.y = boardIndexes[pos].y;
+                    }
+                } else {
+                    console.warn(`Missing boardIndexes or position for ${color}${pawnNum}:`, pos);
+                }
+                counter++;
+            });
+        });
+        
+        drawBoard();
+    }
+
 
     function metaQuarter(startX, startY, midX, midY, endX, endY, color="black") {
         ctx.beginPath();
@@ -259,7 +299,7 @@
 
     // Bottom path: 6 rows x 3 cols
     const numbers3 = [34,"g5",22,33,"g4",23,32,"g3",24,31,"g2",25,30,"g1",26,29,28,27];
-    counter = 0;
+    counter = 0; 
     for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 3; col++) {
             let x = 869 + col * (100 + 5);
@@ -329,6 +369,9 @@ function choosePawn(diceValue) {
                         }
                         pawn.x = boardIndexes[startSquare].x;
                         pawn.y = boardIndexes[startSquare].y;
+                        
+                        target_destination = startSquare;
+                        sendData();
                         drawBoard();
                     } else {
                         // alert("You need to roll a 6 to move a pawn out of the base!");
@@ -344,6 +387,7 @@ function choosePawn(diceValue) {
                         pawn.x = boardIndexes[finishLineIndices[color][finishLineIdx]].x;
                         pawn.y = boardIndexes[finishLineIndices[color][finishLineIdx]].y;
                         target_destination = finishLineIndices[color][finishLineIdx];
+                        sendData();
                         drawBoard();
                     } else {
                         let newIndex = parseInt(currentIndex) + diceValue;
@@ -351,8 +395,9 @@ function choosePawn(diceValue) {
                         if (boardIndexes[newIndex]) {
                             pawn.x = boardIndexes[newIndex].x;
                             pawn.y = boardIndexes[newIndex].y;
-                            drawBoard();
                             target_destination = newIndex;
+                            sendData();
+                            drawBoard();
                         }
                     }
                     

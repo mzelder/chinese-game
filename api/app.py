@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import Flask, jsonify, render_template, request, redirect, url_for, make_response
 import lobby_handler
 import os
 
@@ -9,7 +9,12 @@ app = Flask(__name__,
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()
+    resp = make_response(render_template("index.html"))
+    if not request.cookies.get('player_id'):
+        resp.set_cookie('player_id', player_id, max_age=60*60*24*7)
+    return resp
+
 
 
 @app.route("/lobby", methods=['POST'])
@@ -104,7 +109,10 @@ def game():
     if not lobby or player_id not in lobby.players_connected or not lobby.game_in_progress:
         return redirect(url_for("home"))
     
-    return render_template("game.html", lobby_id=lobby_id)
+    assigned_color_name = ["RED", "BLUE", "GREEN", "YELLOW"][lobby.players_connected.index(player_id)]
+    assigned_color_hex = ["#E85B5B", '#3A6FC0', '#46A463', '#D4AF37'][lobby.players_connected.index(player_id)]
+
+    return render_template("game.html", lobby_id=lobby_id, color_name=assigned_color_name, color_hex=assigned_color_hex)
 
 
 
@@ -123,10 +131,19 @@ def lobby_status():
     if not lobby:
         return jsonify({"error": "Lobby not found"}), 404
     
+    color_names = ["RED", "BLUE", "GREEN", "YELLOW"]
+    color_hexes = ["#E85B5B", "#3A6FC0", "#46A463", "#D4AF37"]
+
+    idx = lobby.players_connected.index(lobby.player_on_the_move)
+    player_on_the_move_color = color_names[idx]
+    player_on_the_move_color_hex = color_hexes[idx]
+    
     return jsonify({
         "game_in_progress": lobby.game_in_progress,
         "players_connected": [{"name": pid[:4]} for pid in lobby.players_connected],
-        "player_on_the_move" : lobby.player_on_the_move
+        "player_on_the_move" : lobby.player_on_the_move,
+        "player_on_the_move_color": player_on_the_move_color,
+        "player_on_the_move_color_hex": player_on_the_move_color_hex
     })
 
 

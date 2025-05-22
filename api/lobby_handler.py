@@ -65,6 +65,7 @@ class Lobby():
         self.board_status = Board()
         self.time_created = t.time()
         self.time_since_last_move = 0
+        self.points = {"Red":0, "Green":0, "Blue":0, "Yellow":0}
 
     def touch_lobby(func):
         def wrapper(self, *args, **kwargs):
@@ -85,6 +86,7 @@ def create_lobby(host_id):
         id = generate_lobby_id()
     games[id] = Lobby(host_id=host_id)
     add_player_to_lobby(host_id, id)
+    games[id].player_on_the_move = games[id].players_connected[0]
     return id
 
 
@@ -110,3 +112,5 @@ def add_player_to_lobby(player_id, lobby_id):
 def move_pawn(lobby_id, color, pawn_idx, target_destination):
     lobby = games[lobby_id]
     lobby.board_status.board['positions'][color][pawn_idx] = target_destination
+    idx_of_player_on_the_move = lobby.players_connected.index(lobby.player_on_the_move)
+    lobby.player_on_the_move = lobby.players_connected[(idx_of_player_on_the_move + 1) % lobby.number_of_players_connected]

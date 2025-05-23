@@ -63,8 +63,15 @@ def fetch_board():
 
     if skipping == 1:
         lobby_handler.skip_turn(lobby_id)
-    elif color and pawn_idx and target_destination:
+    elif color and pawn_idx:
         lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
+
+    print("Lobby ID " + str(lobby_id))
+    print("Who won " + str(who_won))
+    print("Skipping " + str(skipping))
+    print("Color " + str(color))
+    print("Pawn index " + str(pawn_idx))
+    print("Target destination " + str(target_destination))
 
     return jsonify({"status": "received"}), 200
 

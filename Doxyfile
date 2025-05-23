@@ -1,0 +1,23 @@
+# Project settings
+PROJECT_NAME           = "Ludo Game"
+OUTPUT_DIRECTORY       = docs
+
+# Input
+INPUT                  = api/
+FILE_PATTERNS          = *.py
+RECURSIVE              = YES
+
+# Extract documentation from Python code
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Source code browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+STRIP_CODE_COMMENTS    = NO
+
+# Documentation format
+GENERATE_LATEX         = NO
+GENERATE_HTML          = YES

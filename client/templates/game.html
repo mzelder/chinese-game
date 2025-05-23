@@ -96,6 +96,23 @@
         });
     }
 
+    function sendTestData(color, pawn_idx, target_destination) {
+        fetch("/fetch_board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                    lobby_id: lobbyId,
+                    color: color,
+                    pawn_idx: pawn_idx,
+                    target_destination: target_destination,
+                    skipping:skipping,
+                    who_won:who_won
+                })
+        });
+    }
+
     function updateBoard(boardData) {
         if (!boardData || !boardData.board || !boardData.board.positions) {
             return;

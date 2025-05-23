@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div">
+    <p style="font-size: 7.5em;">
+        <span style="color: {{ color_hex }};">{{ winner }} was victorious!</span>
+    </p>
+    <button class="button" onclick="window.location.href='/'">Return</button>
+</div>
+{% endblock %}

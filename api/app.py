@@ -45,12 +45,29 @@ def lobby_page(lobby_id):
 def fetch_board():
     data = request.get_json()
     lobby_id = data.get('lobby_id')
+    who_won = data.get('who_won')
+    skipping = data.get('skipping')
     color = data.get('color')
     pawn_idx = data.get('pawn_idx')
     target_destination = data.get('target_destination')
-    lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
+
+    lobby = lobby_handler.games.get(lobby_id)
+    if not lobby:
+        return jsonify({"error": "Lobby not found"}), 404
+
+    if who_won:
+        try:
+            lobby.who_won = who_won.upper()
+        except AttributeError:
+            pass
+
+    if skipping == 1:
+        lobby_handler.skip_turn(lobby_id)
+    elif color and pawn_idx and target_destination:
+        lobby_handler.move_pawn(lobby_id, color, pawn_idx, target_destination)
 
     return jsonify({"status": "received"}), 200
+
 
 '''
 @app.route("/dummy_fetch")
@@ -151,6 +168,20 @@ def lobby_status():
 @app.route("/joining_code_error")
 def jError():
     return render_template("joining_code_Error.html")
+
+@app.route("/game_end")
+def game_end():
+    COLOR_HEXES = {
+    "BLUE": "#3A6FC0",
+    "RED": "#E85B5B",
+    "YELLOW": "#D4AF37",
+    "GREEN": "#46A463"
+    }
+    winner = request.args.get('winner', 'Unknown').upper()
+    color_hex = COLOR_HEXES.get(winner, "#000")  # default to black if not found
+    return render_template("game_end.html", winner=winner, color_hex=color_hex)
+
+
 
 
 if __name__ == "__main__":

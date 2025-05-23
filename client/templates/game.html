@@ -9,6 +9,7 @@
 
 <canvas id="myCanvas"></canvas>
 <button id="diceRollButton" class="button">Roll Dice</button>
+<button id="skipTurnButton" class="button">Skip Turn</button>
 
 <script>
     const myColor = "{{ color_name|lower }}";
@@ -17,7 +18,7 @@
     disablePawn = false;
     boardIndexes = {};
     finishLineIndices = {
-        'red':['r1', 'r2', 'r3', 'r4', 'r5'],
+        'red':['r1', 'r2', 'r3', 'r4', 'r5', ''],
         'blue':['b1', 'b2', 'b3', 'b4', 'b5'],
         'green':['g1', 'g2', 'g3', 'g4', 'g5'],
         'yellow':['y1', 'y2', 'y3', 'y4', 'y5']
@@ -57,6 +58,9 @@
     let pawn_idx;
     let target_destination;
     let boardData;
+    let skipping = 0;
+    let points = 0;
+    let who_won = null;
     
     setInterval(async () => {
         try {
@@ -65,12 +69,15 @@
             boardData = data[lobbyId].board_status;    
             console.log(boardData);
             updateBoard(boardData);
+            if (data[lobbyId].who_won != null) {
+                window.location.href = `/game_end?winner=${encodeURIComponent(data[lobbyId].who_won)}`;
+            }
         } catch (error) {
             console.error('Fetch error:', error);
         }
     }, 200);
 
-
+    
 
     function sendData() {
         fetch("/fetch_board", {
@@ -82,7 +89,9 @@
                     lobby_id: lobbyId,
                     color: color,
                     pawn_idx: pawn_idx,
-                    target_destination: target_destination
+                    target_destination: target_destination,
+                    skipping:skipping,
+                    who_won:who_won
                 })
         });
         console.log(`LobbyID: ${lobbyId}`);
@@ -250,7 +259,17 @@
         const diceValue = Math.floor(Math.random() * 6) + 1; // Random 1-6
         lastDiceValue = diceValue;
         displayDiceRoll(diceValue);
+        diceRollButton.disabled=true;
         choosePawn(diceValue);
+    });
+
+    const skipTurnButton= document.getElementById('skipTurnButton');
+    skipTurnButton.addEventListener('click', function() {
+        skipping = 1;
+        sendData();
+        skipping = 0;
+        canvas.removeEventListener('click', pawnClickHandler);
+        resetDiceRoll();
     });
 
     let lastDiceValue = null;
@@ -258,9 +277,9 @@
     function displayDiceRoll(value) {
         drawBoard();
         if (value == 6){
-            document.getElementById('diceRollDisplay').innerHTML = `Rolled: ${value}<br>Select a pawn to advance it, or bring a new pawn into play.`;
+            document.getElementById('diceRollDisplay').innerHTML = `Rolled: ${value}<br>Select a pawn to advance it, bring a new pawn into play, or skip the turn.`;
         } else {
-            document.getElementById('diceRollDisplay').innerHTML = `Rolled: ${value}<br>Select a pawn to advance it.`;
+            document.getElementById('diceRollDisplay').innerHTML = `Rolled: ${value}<br>Select a pawn to advance it, or skip the turn.`;
         }
         
     }
@@ -283,7 +302,8 @@
         fetch(`/lobby_status?lobby_id=${encodeURIComponent(lobbyId)}`)
             .then(response => response.json())
             .then(data => {
-                diceRollButton.disabled = !(data.player_on_the_move === getCookie('player_id'));
+                diceRollButton.disabled = !(data.player_on_the_move === getCookie('player_id') && lastDiceValue == null);
+                skipTurnButton.disabled = !(data.player_on_the_move === getCookie('player_id'));
                 const myPlayerId = getCookie('player_id');
                 const currentTurnPlayerId = data.player_on_the_move;
                 const currentTurnColor = data.player_on_the_move_color;
@@ -419,7 +439,39 @@ function choosePawn(diceValue) {
                     return Math.abs(pos.x - pawn.x) < 5 && Math.abs(pos.y - pawn.y) < 5;
                 });
 
-                console.log('Current index before:', currentIndex);
+                if( //all cases where the pawn goes to the final rank
+                    ((currentIndex == 'r5' || currentIndex == 'b5' || currentIndex == 'g5' || currentIndex == 'y5') && diceValue == 1) ||
+                    ((currentIndex == 'r4' || currentIndex == 'b4' || currentIndex == 'g4' || currentIndex == 'y4') && diceValue == 2) ||
+                    ((currentIndex == 'r3' || currentIndex == 'b3' || currentIndex == 'g3' || currentIndex == 'y3') && diceValue == 3) ||
+                    ((currentIndex == 'r2' || currentIndex == 'b2' || currentIndex == 'g2' || currentIndex == 'y2') && diceValue == 4) ||
+                    ((currentIndex == 'r1' || currentIndex == 'b1' || currentIndex == 'g1' || currentIndex == 'y1') && diceValue == 5) ||
+                    
+                    (((currentIndex == '41' && color == 'red') || 
+                    (currentIndex == '2' && color == 'blue') || 
+                    (currentIndex == '15' && color == 'yellow') || 
+                    (currentIndex == '28' && color == 'green')) && diceValue == 6)
+                )
+                {
+                    points += 1
+                    console.log(points);
+                    console.log("^ POINT ADDED!");
+                    pawn.x = 5000;
+                    pawn.y = 5000;
+                    target_destination = 100;
+                    if (points >= 1){
+                        fetch('/fetch_board', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                lobby_id: lobbyId,
+                                who_won: myColor
+                            })
+                        })
+
+                    }
+                    sendData();
+                    break
+                }
 
                 if (!currentIndex){
                     // Pawn is at home (base), can only move if dice is 6
@@ -440,11 +492,14 @@ function choosePawn(diceValue) {
                         target_destination = startSquare;
                         sendData();
                         drawBoard();
+                        resetDiceRoll();
                         diceRollButton.disabled = true;
+                        
                     } else {
                         // alert("You need to roll a 6 to move a pawn out of the base!");
                     }
                 } else {
+                    if (pawn.movesLeft < 0 && Math.abs(pawn.movesLeft) + diceValue != 6) continue;
 
                     pawn.movesLeft -= diceValue;
                     console.log(pawn.movesLeft + " MOVES LEFT");
@@ -511,7 +566,6 @@ function onPawnClick(event) {
             pawn.y = boardIndexes[startSquare].y;
             drawBoard();
 
-            // 🛑 Stop listening after move
             canvas.removeEventListener('click', onPawnClick);
             break;
         }

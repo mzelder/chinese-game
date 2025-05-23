@@ -65,7 +65,8 @@ class Lobby():
         self.board_status = Board()
         self.time_created = t.time()
         self.time_since_last_move = 0
-        self.points = {"Red":0, "Green":0, "Blue":0, "Yellow":0}
+        self.who_won = None
+
 
     def touch_lobby(func):
         def wrapper(self, *args, **kwargs):
@@ -112,5 +113,10 @@ def add_player_to_lobby(player_id, lobby_id):
 def move_pawn(lobby_id, color, pawn_idx, target_destination):
     lobby = games[lobby_id]
     lobby.board_status.board['positions'][color][pawn_idx] = target_destination
+    idx_of_player_on_the_move = lobby.players_connected.index(lobby.player_on_the_move)
+    lobby.player_on_the_move = lobby.players_connected[(idx_of_player_on_the_move + 1) % lobby.number_of_players_connected]
+
+def skip_turn(lobby_id): #not clean but atm i couldnt care less
+    lobby = games[lobby_id]
     idx_of_player_on_the_move = lobby.players_connected.index(lobby.player_on_the_move)
     lobby.player_on_the_move = lobby.players_connected[(idx_of_player_on_the_move + 1) % lobby.number_of_players_connected]

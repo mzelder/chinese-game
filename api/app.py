@@ -9,6 +9,10 @@ app = Flask(__name__,
 
 @app.route("/")
 def home():
+    """
+    Render the home page and set player cookie if not present.
+    @return: Rendered index.html template with player cookie set if needed
+    """
     player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()
     resp = make_response(render_template("index.html"))
     if not request.cookies.get('player_id'):
@@ -19,6 +23,10 @@ def home():
 
 @app.route("/lobby", methods=['POST'])
 def create_lobby_post():
+    """
+    Create a new game lobby and redirect to it.
+    @return: Redirect response to the new lobby page with player cookie set if needed
+    """
     player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()
     lobby_id = lobby_handler.create_lobby(host_id=player_id)
     resp = redirect(url_for('lobby_page', lobby_id=lobby_id))
@@ -30,7 +38,11 @@ def create_lobby_post():
 
 @app.route("/lobby/<lobby_id>")
 def lobby_page(lobby_id):
-
+    """
+    Render the lobby page for a specific game.
+    @param lobby_id: ID of the lobby to display
+    @return: Rendered lobby.html template or 404 if lobby not found
+    """
     player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()
     lobby = lobby_handler.games.get(lobby_id)
     if not lobby:
@@ -43,6 +55,10 @@ def lobby_page(lobby_id):
 
 @app.route("/fetch_board", methods=['POST'])
 def fetch_board():
+    """
+    Handle game board updates and pawn movements.
+    @return: JSON response with status or error message
+    """
     data = request.get_json()
     lobby_id = data.get('lobby_id')
     who_won = data.get('who_won')
@@ -90,6 +106,10 @@ def dummy_fetch():
 
 @app.route("/generate_new_id", methods=["POST"])
 def generate_new_id():
+    """
+    Generate a new lobby ID and return it as JSON.
+    @return: JSON response with new lobby ID and player cookie if needed
+    """
     player_id = request.cookies.get('player_id') or lobby_handler.generate_player_id()
     new_lobby_id = lobby_handler.create_lobby(host_id=player_id)
     
@@ -103,12 +123,19 @@ def generate_new_id():
 
 @app.route("/join_lobby", methods=['POST'])
 def join_lobby():
+    """
+    Render the join lobby page.
+    @return: Rendered join_lobby.html template
+    """
     return render_template("join_lobby.html")
 
 
 @app.route("/start_game", methods=["POST"])
 def start_game():
-
+    """
+    Start a game in a lobby (host only).
+    @return: Redirect to game page or error if not authorized
+    """
     player_id = request.cookies.get("player_id")
     lobby_id = request.form.get("lobby_id")
 
@@ -124,6 +151,10 @@ def start_game():
 
 @app.route("/game")
 def game():
+    """
+    Render the game page for a specific lobby.
+    @return: Rendered game.html template or redirect if invalid
+    """
     lobby_id = request.args.get("lobby_id")
     player_id = request.cookies.get("player_id")
     print(f"JOINING: PLAYER {player_id}")
@@ -142,11 +173,19 @@ def game():
 
 @app.route("/data")
 def get_data():
+    """
+    Get data about all current lobbies (debug endpoint).
+    @return: JSON data about all lobbies
+    """
     # dummy code to simulate lobby creation
     return lobby_handler.get_games()
 
 @app.route("/lobby_status")
 def lobby_status():
+    """
+    Get status information about a specific lobby.
+    @return: JSON response with lobby status or error
+    """
     lobby_id = request.args.get("lobby_id")
     if not lobby_id:
         return jsonify({"error": "Missing lobby_id"}), 400
@@ -174,10 +213,18 @@ def lobby_status():
 
 @app.route("/joining_code_error")
 def jError():
+    """
+    Render the lobby joining error page.
+    @return: Rendered joining_code_Error.html template
+    """
     return render_template("joining_code_Error.html")
 
 @app.route("/game_end")
 def game_end():
+    """
+    Render the game end page with winner information.
+    @return: Rendered game_end.html template with winner data
+    """
     COLOR_HEXES = {
     "BLUE": "#3A6FC0",
     "RED": "#E85B5B",
